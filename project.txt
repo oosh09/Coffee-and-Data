@@ -1,0 +1,182 @@
+--I received sales data from a local coffee roaster, What's Brewing. I created
+--three tables from this data (coffee, sales and price). Using those tables I 
+--will show data to answer some business questions?
+
+--
+
+--Tables
+    --coffee
+create table coffee(
+itemNumber int primary key,
+itemName varchar(100),
+itemCountry varchar(100)
+);
+    --sales
+create table sales(
+itemName varchar(100),
+itemsSold int,
+totalSales decimal(10,2)
+);
+
+    --price
+create table price(
+itemNumber int,
+itemPrice decimal(10,2)
+);
+
+--delete
+drop table price;
+
+drop table coffee;
+
+drop table sales;
+
+--show data
+select *
+from coffee
+order by itemNumber
+;
+
+select *
+from sales
+;
+
+select *
+from price
+order by itemNumber
+;
+
+--inserts
+    --coffee (itemNumber, itemName, itemCountry)
+insert into coffee values(1, 'Brazil Santos', 'Brazil');
+insert into coffee values(2, 'Colombia Supremo', 'Colombia');
+insert into coffee values(3, 'Costa Rica Las Trojas', 'Costa Rica'); 
+insert into coffee values(4, 'Ethiopia Harrar', 'Ethiopia'); 
+insert into coffee values(5, 'Ethiopia Sidamo', 'Ethiopia'); 
+insert into coffee values(6, 'Ethiopia Yirgacheffe', 'Ethiopia'); 
+insert into coffee values(7, 'Guatemala El Pilar', 'Guatemala'); 
+insert into coffee values(8, 'Guatemala Pache', 'Guatemala'); 
+insert into coffee values(9, 'Guatemala Palo Blanco', 'Guatemala'); 
+insert into coffee values(10, 'Guatemala Principito', 'Guatemala'); 
+insert into coffee values(11, 'Guatemala Villa Sarchi', 'Guatemala'); 
+insert into coffee values(12, 'Guatemala Volcancillo Co-op', 'Guatemala'); 
+insert into coffee values(13, 'Honduran El Lechero', 'Honduras'); 
+insert into coffee values(14, 'Honduran La Mora', 'Honduras'); 
+insert into coffee values(15, 'Honduran Palo Blanco', 'Honduras'); 
+insert into coffee values(16, 'Java Blawan Estate', 'Indonesia'); 
+insert into coffee values(17, 'Kenya Gatunya Kigio AA', 'Kenya'); 
+insert into coffee values(18, 'Mexican Altura', 'Mexico'); 
+insert into coffee values(19, 'PNG Kuta Mill Peaberry', 'Papua New Guinea'); 
+insert into coffee values(20, 'Panama Los Lajones', 'Panama'); 
+insert into coffee values(21, 'Peru Utcumbamba Natual', 'Peru'); 
+insert into coffee values(22, 'Sumatra Dark Roast', 'Indonesia'); 
+insert into coffee values(23, 'Sumatra Mandheling', 'Indonesia'); 
+insert into coffee values(24, 'Tanzania Peaberry', 'Tanzania'); 
+
+    --sales (itemName, itemsSold, totalSales)
+insert into sales values('Brazil Santos', 222, 2172.61);
+insert into sales values('Colombia Supremo', 305, 2965.72);
+insert into sales values('Costa Rica Las Trojas', 674, 6938.47);
+insert into sales values('Ethiopia Harrar', 136, 1701.33);
+insert into sales values('Ethiopia Sidamo', 311, 3964.66);
+insert into sales values('Ethiopia Yirgacheffe', 305, 4191.53);
+insert into sales values('Guatemala El Pilar', 27, 371.05);
+insert into sales values('Guatemala Pache', 77, 1058.60);
+insert into sales values('Guatemala Palo Blanco', 34, 655.81);
+insert into sales values('Guatemala Principito', 83, 1126.66);
+insert into sales values('Guatemala Villa Sarchi', 124, 1709);
+insert into sales values('Guatemala Volcancillo Co-Op', 102, 1401.64);
+insert into sales values('Honduran El Lechero', 192, 2453.69);
+insert into sales values('Honduran La Mora', 244, 3132.12);
+insert into sales values('Honduran Palo Blanco', 159, 2338.80);
+--insert into sales values('Java Blawan Estate', null, null);
+insert into sales values('Kenya Gatunya Kigio AA', 174, 2396.54);
+insert into sales values('Mexican Altura', 568, 5587.40);
+--insert into sales values('PNG Kuta Mill Peaberry', null, null);
+insert into sales values('Panama Los Lajones', 184, 2901.52);
+--insert into sales values('Peru Utcumbamba', null, null);
+insert into sales values('Sumatra Dark Roast', 327, 3989.59);
+insert into sales values('Sumatra Mandheling', 216, 2537.41);
+insert into sales values('Tanzania Peaberry', 173, 1875.21);
+
+    --price (itemNumber, itemPrice)
+insert into price values(1, 10);
+insert into price values(2, 10);
+insert into price values(3, 10.50);
+insert into price values(4, 13);
+insert into price values(5, 13);
+insert into price values(6, 14);
+insert into price values(7, 14);
+insert into price values(8, 14);
+insert into price values(9, 19.59);
+insert into price values(10, 14);
+insert into price values(11, 14);
+insert into price values(12, 14);
+insert into price values(13, 13);
+insert into price values(14, 13.13);
+insert into price values(15, 15.04);
+--insert into price values(16, 12.50);
+insert into price values(17, 14);
+insert into price values(18, 10);
+--insert into price values(19, 13);
+insert into price values(20, 16);
+--insert into price values(21, 14);
+insert into price values(22, 12.50);
+insert into price values(23, 12);
+insert into price values(24, 11);
+
+--joins
+
+    --show item and corresponding price
+
+select coffee.itemName, price.itemPrice
+from coffee
+inner join price on coffee.itemNumber=price.itemNumber
+order by coffee.itemNumber
+;
+
+    --show sales by country
+select coffee.itemCountry as Country, sum(sales.totalSales) 
+from coffee
+inner join sales on coffee.itemName=sales.itemName
+group by itemCountry
+order by sum(sales.totalSales) desc
+;
+
+    --show top 5 items in sales (limit, rank and top would not work)
+select *
+from sales
+where totalSales > 3200
+order by totalSales desc
+;
+
+-- show list of bottom 5 sales with at least 100 items purchased
+select *
+from sales
+where itemName in
+(select itemName 
+from sales
+where itemsSold > 100 and totalSales < 2300
+)
+order by totalSales desc
+;
+
+--show items with price above 14 and their sales
+select price.itemNUmber, price.itemPrice, coffee.itemName, sales.totalSales
+from price
+inner join coffee on price.itemNumber=coffee.itemNumber
+inner join sales on sales.itemName=coffee.itemName
+where itemPrice in
+(select itemPrice 
+from price
+where itemPrice > 14
+)
+order by itemPrice desc
+;
+
+--show new items that have not launched
+select c.itemName, s.itemsSold, s.totalSales
+from coffee c
+left join sales s on c.itemName=s.itemName
+order by s.itemsSold asc
+;
